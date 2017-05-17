@@ -4,16 +4,6 @@ trait valid_both_in_bash_and_in_scala /* 2>/dev/null
 
 set -e
 
-function md5() {
-  FILE=$1
-  EXPECTED_MD5=$2
-  if command -v md5sum >/dev/null 2>&1 ; then
-    echo $(md5sum $FILE | cut -c 1-32)
-  else 
-    echo $EXPECTED_MD5
-  fi
-}
-
 function fetch() {
   FILE=$1
   URL=$2
@@ -71,16 +61,17 @@ object script {
     import play.api.routing.sird._
     import play.api.mvc._
 
-    val port: Int = 9000
+    val port: Int = 9789
+    val ipAddress = "127.0.0.1"
     val server = NettyServer.fromRouter(ServerConfig(
       port = Some(port),
-      address = "127.0.0.1"
+      address = ipAddress
     )) {
       case GET(p"/hello/$to") => Action { implicit req =>
         Results.Ok(s"Hello $to ${req.host}")
       }
     }
-    println("Server started! Please go to http://127.0.0.1:9000/hello/world to see the result")
+    println(s"Server started! Please go to http://$ipAddress:$port/hello/world to see the result")
     
     readLine
     
